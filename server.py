@@ -1,3 +1,4 @@
+import os
 from mcp.server.fastmcp import FastMCP
 from agents.compras import buscar_solped_oc, buscar_por_comprador, buscar_solpeds_pendientes
 
@@ -37,4 +38,11 @@ def ping() -> str:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(mcp.sse_app(), host="0.0.0.0", port=8000)
+    
+    uvicorn.run(
+        mcp.sse_app(), 
+        host="0.0.0.0", 
+        port=8000, 
+        proxy_headers=True, 
+        forwarded_allow_ips="*"
+    )

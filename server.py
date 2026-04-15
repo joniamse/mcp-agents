@@ -29,7 +29,7 @@ def ping() -> str:
     return "MCP Server activo OK"
 
 async def health(request):
-    return JSONResponse({"status": "ok", "server": "MCP Agente Compras"})
+    return JSONResponse({"status": "ok", "server": "MCP Agents"})
 
 app = mcp.sse_app()
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])

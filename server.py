@@ -37,13 +37,4 @@ def ping() -> str:
     return "MCP Server activo OK"
 
 if __name__ == "__main__":
-    import uvicorn
-    # Forzamos la configuración de proxy y hosts permitidos
-    uvicorn.run(
-        mcp.sse_app(), 
-        host="0.0.0.0", 
-        port=8000, 
-        proxy_headers=True, 
-        forwarded_allow_ips="*",
-        allowed_hosts=["*"]
-    )
+    mcp.run(transport="sse", host="0.0.0.0", port=8000)

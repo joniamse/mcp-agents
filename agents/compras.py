@@ -1,12 +1,11 @@
 import pyodbc
-import os
 
-def get_connection():
-    return pyodbc.connect(os.environ["DB_CONNECTION_STRING"])
+def get_connection(connection_string: str):
+    return pyodbc.connect(connection_string)
 
-def buscar_solped_oc(numero: str) -> str:
+def buscar_solped_oc(numero: str, connection_string: str) -> str:
     try:
-        conn = get_connection()
+        conn = get_connection(connection_string)
         cursor = conn.cursor()
         numero_limpio = numero.strip().lstrip("0")
 
@@ -60,9 +59,9 @@ def buscar_solped_oc(numero: str) -> str:
         return f"Error al consultar la base de datos: {str(e)}"
 
 
-def buscar_por_comprador(comprador: str) -> str:
+def buscar_por_comprador(comprador: str, connection_string: str) -> str:
     try:
-        conn = get_connection()
+        conn = get_connection(connection_string)
         cursor = conn.cursor()
 
         query = """
@@ -98,9 +97,9 @@ def buscar_por_comprador(comprador: str) -> str:
         return f"Error al consultar la base de datos: {str(e)}"
 
 
-def buscar_solpeds_pendientes(centro: str = None) -> str:
+def buscar_solpeds_pendientes(centro: str = None, connection_string: str = None) -> str:
     try:
-        conn = get_connection()
+        conn = get_connection(connection_string)
         cursor = conn.cursor()
 
         query = """

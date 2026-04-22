@@ -1,4 +1,5 @@
 import os
+import pyodbc
 from mcp.server.fastmcp import FastMCP
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.routing import Route
@@ -31,9 +32,31 @@ def ping() -> str:
 async def health(request):
     return JSONResponse({"status": "ok", "server": "MCP Agents"})
 
+async def health_db(request):
+    if not SQL_CONFIG:
+        return JSONResponse({
+            "status": "error",
+            "detalle": "Variable SQL_CONNECTION_STRING no configurada"
+        }, status_code=500)
+    try:
+        conn = pyodbc.connect(SQL_CONFIG, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        conn.close()
+        return JSONResponse({
+            "status": "ok",
+            "detalle": "Conexión a SQL Server exitosa"
+        })
+    except Exception as e:
+        return JSONResponse({
+            "status": "error",
+            "detalle": str(e)
+        }, status_code=500)
+
 app = mcp.sse_app()
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 app.routes.append(Route("/ping", health))
+app.routes.append(Route("/ping-db", health_db))
 
 if __name__ == "__main__":
     import uvicorn

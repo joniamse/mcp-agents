@@ -1,0 +1,49 @@
+name: Trigger auto deployment for container-mcp
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/container-mcp-AutoDeployTrigger-c9a2eb94-5945-4f16-beda-14f849095b7d.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CONTAINERMCP_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CONTAINERMCP_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CONTAINERMCP_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          _targetLabelKey_: _targetLabel_
+          registryUrl: ca0fac172ae1acr.azurecr.io
+          registryUsername: ${{ secrets.CONTAINERMCP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.CONTAINERMCP_REGISTRY_PASSWORD }}
+          containerAppName: container-mcp
+          resourceGroup: RG_MCP_Agent
+          imageToBuild: ca0fac172ae1acr.azurecr.io/container-mcp:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+

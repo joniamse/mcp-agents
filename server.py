@@ -39,7 +39,7 @@ async def health_db(request):
             "detalle": "Variable SQL_CONNECTION_STRING no configurada"
         }, status_code=500)
     try:
-        conn = pyodbc.connect(SQL_CONFIG, timeout=5)
+        conn = pyodbc.connect(SQL_CONFIG, timeout=20)
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
         conn.close()

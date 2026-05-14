@@ -1,25 +1,20 @@
 name: Trigger auto deployment for containerappmcpv2
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
     branches: 
       [ main ]
     paths:
     - '**'
     - '.github/workflows/containerappmcpv2-AutoDeployTrigger-b34df7db-b070-4672-87ae-1388aaed5abd.yml'
-
-  # Allow manual trigger 
   workflow_dispatch:      
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
-
+      id-token: write
+      contents: read
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
@@ -35,15 +30,10 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
-          registryUrl: 
+          dockerfilePath: Dockerfile
+          registryUrl: containerregistrymcpv2.azurecr.io
           registryUsername: ${{ secrets.CONTAINERAPPMCPV2_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.CONTAINERAPPMCPV2_REGISTRY_PASSWORD }}
           containerAppName: containerappmcpv2
           resourceGroup: RG_MCP
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
-
+          imageToBuild: containerregistrymcpv2.azurecr.io/containerappmcpv2:${{ github.sha }}

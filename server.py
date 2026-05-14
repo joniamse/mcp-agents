@@ -45,7 +45,7 @@ async def health_db(request):
         conn.close()
         return JSONResponse({
             "status": "ok",
-            "detalle": "Conexión a SQL Server exitosa"
+            "detalle": "Conexión a SQL Server exitoso"
         })
     except Exception as e:
         return JSONResponse({

@@ -1,12 +1,22 @@
 import os
 import pyodbc
 from mcp.server.fastmcp import FastMCP
-from starlette.middleware.trustedhost import TrustedHostMiddleware
+from mcp.server.transport_security import TransportSecuritySettings
 from starlette.routing import Route
 from starlette.responses import JSONResponse
 from agents.compras import buscar_solped_oc, buscar_por_comprador, buscar_solpeds_pendientes
 
-mcp = FastMCP("synapse-analytics-agent")
+# DNS rebinding protection del SDK MCP se auto-activa cuando el host es
+# localhost y rechaza requests con Host headers distintos a 127.0.0.1/localhost.
+# Detrás del ingress HTTPS de Azure Container Apps la deshabilitamos para que
+# acepte el Host header de *.azurecontainerapps.io.
+mcp = FastMCP(
+    "synapse-analytics-agent",
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=False,
+    ),
+)
+
 SQL_CONFIG = os.getenv("SQL_CONNECTION_STRING")
 
 @mcp.tool()
@@ -54,7 +64,6 @@ async def health_db(request):
         }, status_code=500)
 
 app = mcp.sse_app()
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 app.routes.append(Route("/ping", health))
 app.routes.append(Route("/ping-db", health_db))
 

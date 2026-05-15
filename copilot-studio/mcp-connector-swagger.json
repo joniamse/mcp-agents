@@ -1,0 +1,40 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "MCP Synapse Analytics Agent",
+    "description": "Custom connector que expone el MCP server de agentes de compras (Solpeds / OCs) para Copilot Studio.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Rizobacter Argentina"
+    }
+  },
+  "host": "containerappmcpv2.delightfulground-71e1552d.eastus2.azurecontainerapps.io",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [],
+  "produces": [],
+  "paths": {
+    "/sse": {
+      "get": {
+        "summary": "MCP Server SSE endpoint",
+        "description": "Endpoint Server-Sent Events del MCP. Copilot Studio descubre y ejecuta las tools dinámicamente a través de este canal.",
+        "operationId": "InvokeMCP",
+        "x-ms-agentic-protocol": "mcp-sse",
+        "x-ms-visibility": "important",
+        "responses": {
+          "200": {
+            "description": "Conexión SSE establecida con el MCP."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {},
+  "parameters": {},
+  "responses": {},
+  "securityDefinitions": {},
+  "security": [],
+  "tags": []
+}
